@@ -2,7 +2,7 @@
 
 /**
  * Класс обработчика запроса пользователя
- * 
+ *
  * @author Собканюк Андрей <4apay@mail.ru>, Нечаев Ярослав <nechaev@expertkey.ru>
  */
 class Handler {
@@ -14,13 +14,15 @@ class Handler {
 
 	/**
 	 * Список категорий пользователей, которым доступно выполнение данного экшена
+	 * TODO: Делегировать доступ отдельному классу
 	 * @var mixed
+	 *
 	 */
 	protected $access;
 
 	/**
 	 * Геттер для dependency
-	 * 
+	 *
 	 * @return array Список зависимостей этого класса от подключаемых модулей
 	 */
 	public function GetDependencies() {
@@ -29,13 +31,13 @@ class Handler {
 
 	/**
 	 * Геттер для access;
-	 * 
+	 * TODO: See todo for field $access
 	 * @return array Список категорий пользователей, которым доступно выполнение данного экшена
 	 */
 	public function GetAccess() {
 		return $this->access;
 	}
-	
+
 	/**
 	 * Метод для получения "чистого" списка параметров запроса
 	 * @param mixed $beside Дополнительныо исключаемые элементы (либо строка для одного элемента, либо массив для нескольких)
@@ -56,16 +58,17 @@ class Handler {
 	/**
 	 * Метод для получения конкретного параметра из запроса
 	 * @param string $name Имя параметра
+	 * @param mixed $byDefault Значение по умолчанию, которое будет возвращено, если текущее значение empty
 	 * @return string|null Значение параметра, либо null в случае если такого параметра не существует, либо он пуст
 	 */
-	protected function GetParam($name) {
+	protected function GetParam($name, $byDefault = null) {
 		if (!empty($_POST[$name]))
 			return $_POST[$name];
 
 		if (!empty($_GET[$name]))
 			return $_GET[$name];
 
-		return null;
+		return $byDefault;
 	}
 
 	/**
@@ -73,6 +76,7 @@ class Handler {
 	 * @param string $function Имя функции или метода
 	 * @param string|object $class Имя класса или ссылка на экземпляр класса, соответсвующего метода
 	 * @return array|false Ассоциативный массив параметров, расположенных в нужном порядке, false - в случае ошибки
+	 *
 	 */
 	public function GetOrderedParams($function, $class = null) {
 		try {
