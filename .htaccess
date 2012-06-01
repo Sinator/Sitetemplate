@@ -1,13 +1,14 @@
-RewriteEngine On
-
 <Files ~ "(README|\.htaccess)">
 Deny from all
 </Files>
 
 AddDefaultCharset utf-8
-
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ index.php?path=$1 [L,QSA]
-
-
 DirectoryIndex index.php
+
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{REQUEST_URI} !^/adm [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)?$ index.php?path=/$1 [L,QSA]
+

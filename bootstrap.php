@@ -66,8 +66,10 @@ function __autoload($N) {
 		$N = substr($N, $backslash + 1);
 	}
 
-	if (!isset($ns) && file_exists(WORKING_DIR ."/lib/{$N}.class.php"))
-		include_once(WORKING_DIR ."/lib/{$N}.class.php");
+	if (!isset($ns) && file_exists(WORKING_DIR ."/lib/core/{$N}.class.php"))
+		include_once(WORKING_DIR ."/lib/core/{$N}.class.php");
+	elseif (!isset($ns) && file_exists(WORKING_DIR ."/lib/logic/{$N}.class.php"))
+		include_once(WORKING_DIR ."/lib/logic/{$N}.class.php");
 	elseif (isset($ns) && $ns == 'Action' && file_exists(ACTIONS_DIR ."/{$N}.class.php"))
 		include_once(ACTIONS_DIR ."/{$N}.class.php");
 	elseif (isset($ns) && $ns == 'Page' && file_exists(PAGES_DIR ."/{$N}.class.php"))

@@ -1,0 +1,18 @@
+{
+	"paths": {
+		"/"    : {"page": "main"},
+		"/sitemap": {"page": "sitemap"}
+	},
+
+	"pages": {
+		"home": {
+			"title": "Homepage",
+			"description": "Main page of the site"
+		},
+
+		"sitemap": {
+			"title": "Карта сайта",
+			"description": "Base site entry"
+		}
+	}
+}

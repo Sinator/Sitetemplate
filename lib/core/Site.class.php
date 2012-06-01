@@ -40,19 +40,20 @@ class Site {
 	 */
 	function Build() {
 		// Routing (Shubert 29.05.1012)
+			$_GET["path"] = !empty($_GET["path"])? $_GET["path"] : '';
 			$behavior = array("type"=>"page", "name"=> $this->settings['Pages']['default']);
-			foreach($this->routing["paths"] as $path -> $info) {
-				if ($count = preg_match($path,$_GET["path"],$matches) > 0) {
+			foreach($this->routing["paths"] as $path => $info) {
+				$currDepth = substr_count($path, '/');
+				if ($count = preg_match("|^".$path."/?$|i",$_GET["path"],$matches) > 0) {
 					if ($count > 1) $_REQUEST['PAGE_PARAMS'] = array_shift($matches);
 					if (isset($info["page"]))
 						$behavior = array("type"=>"page"  , "name"=>$info["page"]  );
 					else
 						$behavior = array("type"=>"action", "name"=>$info["action"]);
 					break;
-				}
+				}			
 			}
 		// <- Routing
-
 
 		// В первую очередь выполняем "действия"
 		if ($behavior["type"] == "action") {

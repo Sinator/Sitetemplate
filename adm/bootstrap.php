@@ -17,11 +17,21 @@ define("WWW_DIR", "http://{$_SERVER['HTTP_HOST']}" .substr($_SERVER['PHP_SELF'],
 /**
  * Путь к основному файлу с настройками
  */
-define("SETTINGS_BASE", WORKING_DIR .'/../settings.ini');
+define("SETTINGS_BASE", WORKING_DIR .'/../config/settings.ini');
 /**
  * Путь к файлу с настройками
  */
-define("SETTINGS", WORKING_DIR .'/settings.ini');
+define("SETTINGS", WORKING_DIR .'/config/settings.ini');
+
+/**
+ * Путь к файлу с путями
+ */
+define("ROUTING", WORKING_DIR .'/config/routing');
+
+/**
+ * Путь к файлу с путями
+ */
+define("ROUTING_BASE", WORKING_DIR .'/../config/routing');
 
 /**
  * Путь к файлам-классам с действиями 
@@ -60,6 +70,18 @@ define("PHOTOS_URN", '/photos');
 $settings = array_merge(parse_ini_file(SETTINGS_BASE, true), parse_ini_file(SETTINGS, true));
 
 /**
+ * Ассоциативный массив с навигация сайта
+ * @var array
+ */
+$routing =  json_decode(file_get_contents(ROUTING),true);
+
+/**
+ * Ассоциативный массив с навигация сайта
+ * @var array
+ */
+$routing_base =  json_decode(file_get_contents(ROUTING_BASE),true);
+
+/**
  * Функция автоподгрузки файлов с классам
  * @param string $N имя класса
  */
@@ -70,8 +92,10 @@ function __autoload($N) {
 		$N = substr($N, $backslash + 1);
 	}
 	
-	if (!isset($ns) && file_exists(WORKING_DIR ."/../lib/{$N}.class.php"))
-		include_once(WORKING_DIR ."/../lib/{$N}.class.php");
+	if (!isset($ns) && file_exists(WORKING_DIR ."/../lib/core/{$N}.class.php"))
+		include_once(WORKING_DIR ."/../lib/core/{$N}.class.php");
+	elseif (!isset($ns) && file_exists(WORKING_DIR ."/../lib/logic/{$N}.class.php"))
+		include_once(WORKING_DIR ."/../lib/logic/{$N}.class.php");
 	elseif (isset($ns) && $ns == 'Action' && file_exists(ACTIONS_DIR ."/{$N}.class.php"))
 		include_once(ACTIONS_DIR ."/{$N}.class.php");
 	elseif (isset($ns) && $ns == 'Page' && file_exists(PAGES_DIR ."/{$N}.class.php"))

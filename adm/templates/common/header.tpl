@@ -31,7 +31,8 @@
 		<div id="header" class="container">
 			<a href="" id="logo"><img src="images/logo.png" width="160"/></a>
 			<ul class="nav nav-tabs">
-				<li {if $_name == main} class="active"{/if}><a href="./?page=main">Первая</a></li>
+				<li {if $_name == 'main'} class="active"{/if}><a href="./?page=main">Первая</a></li>
+				<li {if $_name == 'sitemap'} class="active"{/if}><a href="./?page=sitemap">Карта сайта</a></li>
 				<li class="pull-right"><a href="../">Перейти на сайт</a></li>
 			</ul>
 		</div>

@@ -3,4 +3,10 @@ Deny from all
 </Files>
 
 AddDefaultCharset utf-8
-DirectoryIndex index.php
+
+RewriteEngine On
+RewriteBase /adm/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)?$ index.php?path=/$1 [L,QSA]
+
