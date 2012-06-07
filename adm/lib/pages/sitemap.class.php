@@ -24,9 +24,11 @@ class sitemap extends \Page {
 	 */
 	public function Generate() {
 		global $routing_base;
+		echo $_SERVER['SCRIPT_URL'];
 		$sitemap = new \SiteMap($routing_base);
 		
-		$tree = $sitemap->GetTree();
+		$tree = $sitemap->GetTree('');
+		$this->tpl->assign('tree', $tree);
 
 	}
 }

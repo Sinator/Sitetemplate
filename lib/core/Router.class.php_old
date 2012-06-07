@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * Класс роутингов
+ * @author Смагин АС <asmagin@tdigitals.ru>
+ */
+class Router {
+	/**
+	 * Массив настроек
+	 * @var array
+	 */
+	private $settings;
+
+	/**
+	 * Массив статичной навигации
+	 * @var array
+	 */
+	private $routing_static;
+
+	/**
+	 * Массив динамичной навигации
+	 * @var array
+	 */
+	private $routing_preg;
+
+	/**
+	 * Массив информации о странице
+	 * @var array
+	 */
+	private $page;
+
+	/**
+	 * Конструктор
+	 */
+	function __construct() {
+		global $db;
+		
+		// Получаем все статические маршруты
+		$query = "SELECT *
+					FROM
+						`pages_aliases`
+					WHERE
+						`preg` = '0'
+					ORDER BY 
+						`pid`";
+		// Выполняем запрос
+		if(!$q = $db->query($query))
+			if(is_object($q))
+				throw new SiteException('Ошибка запроса к БД. SQL Info: '. implode(', ', $q->errorInfo()));
+			else
+				throw new SiteException('Ошибка запроса к БД. SQL Info: '. implode(', ', $db->errorInfo()));
+		
+		// Формируем массив роутингов		
+		$res = $q->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($res AS $rownumber => $row) {
+			$alias = $row['alias'];
+			foreach ($row AS $field => $value)
+				$this->routing_static[$alias][$field] = stripslashes($value);
+		}
+		
+		// Получаем все динамические маршруты (регулярки)
+		$query = "SELECT *
+					FROM
+						`pages_aliases`
+					WHERE
+						`preg` = '1'
+					ORDER BY 
+						`pid`";
+		// Выполняем запрос
+		if(!$q = $db->query($query))
+			if(is_object($q))
+				throw new SiteException('Ошибка запроса к БД. SQL Info: '. implode(', ', $q->errorInfo()));
+			else
+				throw new SiteException('Ошибка запроса к БД. SQL Info: '. implode(', ', $db->errorInfo()));
+		
+		// Формируем массив роутингов
+		$res = $q->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($res AS $rownumber => $row) {
+			$alias = $row['alias'];
+			foreach ($row AS $field => $value)
+				$this->routing_preg[$alias][$field] = stripslashes($value);
+		}
+	}
+	
+	
+	/**
+	 * Метод получения информации о страце по пути
+	 * @param string $path Запрошеный путь. Если NULL то использует $_SERVER['SCRIPT_URL']
+	 * 
+	 * @return boolen TRUE если нашли страницу. FALSE в противном случае.
+	 */
+	 public function GetByPath($path = null) {
+	 	global $settings;
+	 	if(empty($path))
+			$path = $_SERVER['SCRIPT_URL'];
+		
+		if(!empty($settings['Route']['prefix']))
+			$path = preg_replace('|^'.$settings['Route']['prefix'].'|i', '', $path);
+			
+		if(!empty($settings['Route']['suffix']))
+			$path = preg_replace('|'.$settings['Route']['suffix'].'$|i', '', $path);
+		
+		echo $path."<br>";
+		if(isset($this->routing_static[$path])) {
+			$this->page = $this->routing_static[$path];
+			return true;
+		}
+		
+		foreach ($this->routing_preg AS $pattern => $page) {
+			if(preg_match('|'.$pattern.'|i', $path)){
+				$this->page = $page;
+				return true;
+			}
+		}
+		
+		return false;
+	 }
+	
+	
+	/**
+	 * Метод получения PID (PageID) из информации страници
+	 * 
+	 * @return mix (int) PID при успехе. FALSE если страница была не найдена
+	 */
+	 public function GetPageId() {
+	 	if(empty($this->page['pid']) || !is_numeric($this->page['pid']))
+			return false;
+		
+		return $this->page['pid'];
+	 }
+}
+
+?>
